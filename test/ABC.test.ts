@@ -1,5 +1,5 @@
 import { describe, test } from "@jest/globals";
-import { ABC } from "../src/MarsRover";
+import { ABC } from "../src/ABC";
 import {fail} from "assert";
 
 
