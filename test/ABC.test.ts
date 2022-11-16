@@ -1,10 +1,9 @@
-import { describe, test } from "@jest/globals";
+import { describe, test, expect } from "@jest/globals";
 import { ABC } from "../src/ABC";
-import {fail} from "assert";
 
 
-describe("ABC", () => {
-  test("move", () => {
-    fail('fail test')
+describe("ABC rules", () => {
+  test("can make word for letter A", () => {
+    expect(ABC.canMakeWord("A")).toEqual(true);
   });
 });
