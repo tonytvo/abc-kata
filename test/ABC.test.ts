@@ -4,6 +4,6 @@ import { ABC } from "../src/ABC";
 
 describe("ABC rules", () => {
   test("can make word for letter A", () => {
-    expect(ABC.canMakeWord("A")).toEqual(true);
+    expect(new ABC(true).canMakeWord("A").spellResult()).toEqual(true);
   });
 });
