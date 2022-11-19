@@ -1,7 +1,6 @@
 import { describe, test, expect } from "@jest/globals";
-import { ABC } from "../src/ABC";
+import {ABCFactory} from "../src/ABC";
 import {fail} from "assert";
-
 
 describe("ABC rules", () => {
   test("can make word for letter A", () => {
@@ -20,11 +19,3 @@ describe("ABC rules", () => {
   });
 
 });
-
-class ABCFactory {
-  static createDefaultABC = () => new ABC(true);
-
-  static createABCFromBlocks(letters: string[]): ABC {
-    return new ABC(true);
-  }
-}

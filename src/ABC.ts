@@ -16,3 +16,12 @@ export class ABC {
         return true;
     }
 }
+
+export class ABCFactory {
+    static createDefaultABC = () => new ABC(true);
+
+    static createABCFromBlocks(letters: string[]): ABC {
+        return new ABC(true);
+    }
+}
+
