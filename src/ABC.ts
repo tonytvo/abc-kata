@@ -11,4 +11,8 @@ export class ABC {
     spellResult() {
         return this._spellResult;
     }
+
+    containsBlock(letter: string) {
+        return true;
+    }
 }
