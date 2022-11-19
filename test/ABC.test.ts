@@ -36,4 +36,9 @@ describe("ABC rules", () => {
     expect(canMakeWord).toEqual(true);
   });
 
+  test("can make word for AB", () => {
+    let canMakeWord = ABCFactory.createABCFromBlocks(["N A", "B O"]).canMakeWord("AB")
+    expect(canMakeWord).toEqual(true);
+  });
+
 });

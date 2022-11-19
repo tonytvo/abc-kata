@@ -12,12 +12,21 @@ export class ABC {
     }
 
     canMakeWord(word: string) {
-        let result = this._blocks.removeBlockMakeUpLetter(word);
-        return pipe(result,
-            E.fold(
-                (error) => false,
-                (blocks) => true)
-        );
+        let availableBlocks = this._blocks;
+        word.split("").forEach( singleLetter => {
+            console.log("availableBlocks = " + JSON.stringify(availableBlocks));
+            let result = availableBlocks.removeBlockMakeUpLetter(singleLetter);
+            let [canMakeUpLetter, newAvailableBlocks] = pipe(result,
+                E.fold(
+                    (error) => [false, new Blocks([])],
+                    (blocks) => [true, blocks])
+            );
+            if (!canMakeUpLetter) {
+                return false;
+            }
+            availableBlocks = newAvailableBlocks;
+        });
+        return true;
     }
 
     spellResult() {
