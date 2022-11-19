@@ -1,11 +1,14 @@
 export class ABC {
     private readonly _spellResult: boolean;
-    constructor(spellResult: boolean) {
+    private readonly _blocks: Blocks;
+
+    constructor(spellResult: boolean, blocks: Blocks) {
         this._spellResult = spellResult;
+        this._blocks = blocks;
     }
 
     canMakeWord(word: string): ABC {
-        return new ABC(true);
+        return new ABC(true, new Blocks([]));
     }
 
     spellResult() {
@@ -24,12 +27,19 @@ class Block {
     }
 }
 
+class Blocks {
+    private readonly _blocks: Block[];
+    constructor(blocks: Block[]) {
+        this._blocks = blocks;
+    }
+}
+
 export class ABCFactory {
-    static createDefaultABC = () => new ABC(true);
+    static createDefaultABC = () => new ABC(true, new Blocks([]));
 
     static createABCFromBlocks(letters: string[]): ABC {
-        letters.map(letter => new Block(letter));
-        return new ABC(true);
+        let blocks = letters.map(letter => new Block(letter));
+        return new ABC(true, new Blocks(blocks));
     }
 }
 
