@@ -1,2 +1,5 @@
 - seems like includes/indexOf doesn't do deep equal on object, hence find is used
 - for some reasons, running tests from intellij, skip certain tests even though, it not specified with skips
+- trycatch to return error early, but it's kind of like state system
+  - once the letter is used with certain blocks, it can check the remaining letters with the remaining blocks
+  - as long as there one letter that can't be built/match with anyblock, return error
