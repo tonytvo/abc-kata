@@ -1,3 +1,5 @@
+import { right, left, Either } from "fp-ts/lib/Either"
+
 export class ABC {
     private readonly _spellResult: boolean;
     private readonly _blocks: Blocks;
@@ -29,6 +31,10 @@ class Block {
     isEqual(block: Block) {
         return this._letter.toLowerCase() === block._letter.toLowerCase();
     }
+
+    canMakeLetter(singleLetter: string) {
+        return this._letter.toLowerCase().indexOf(singleLetter.toLowerCase()) >= 0;
+    }
 }
 
 class Blocks {
@@ -39,6 +45,27 @@ class Blocks {
 
     containsBlock(letters: string) {
         return this._blocks.findIndex(element => element.isEqual(new Block(letters))) >= 0;
+    }
+
+    removeBlockMakeUpLetter(singleLetter: string) {
+        let foundIndex = this._blocks.findIndex(element => element.canMakeLetter(singleLetter));
+        return foundIndex >= 0 ?
+            right(this.removeBlockAt(foundIndex)) :
+            left(new Error("There's no match block"));
+    }
+
+    private removeBlockAt(foundIndex) {
+        let remainingBlocks = this.cloneOriginalBlocks();
+        this.removeBlockAtIndex(remainingBlocks, foundIndex);
+        return new Blocks(remainingBlocks);
+    }
+
+    private removeBlockAtIndex(remainingBlocks: Block[], foundIndex) {
+        remainingBlocks.splice(foundIndex, 1);
+    }
+
+    private cloneOriginalBlocks() {
+        return this._blocks.slice();
     }
 }
 
