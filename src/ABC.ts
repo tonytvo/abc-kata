@@ -17,10 +17,18 @@ export class ABC {
     }
 }
 
+class Block {
+    private readonly _letter: string;
+    constructor(letter: string) {
+        this._letter = letter;
+    }
+}
+
 export class ABCFactory {
     static createDefaultABC = () => new ABC(true);
 
     static createABCFromBlocks(letters: string[]): ABC {
+        letters.map(letter => new Block(letter));
         return new ABC(true);
     }
 }
