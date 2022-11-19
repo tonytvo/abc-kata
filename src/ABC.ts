@@ -1,4 +1,6 @@
-import { right, left, Either } from "fp-ts/lib/Either"
+import {right, left, fold, Either} from "fp-ts/lib/Either"
+import * as E from "fp-ts/lib/Either";
+import {pipe} from "fp-ts/function";
 
 export class ABC {
     private readonly _spellResult: boolean;
@@ -9,8 +11,13 @@ export class ABC {
         this._blocks = blocks;
     }
 
-    canMakeWord(word: string): ABC {
-        return new ABC(true, new Blocks([]));
+    canMakeWord(word: string) {
+        let result = this._blocks.removeBlockMakeUpLetter(word);
+        return pipe(result,
+            E.fold(
+                (error) => false,
+                (blocks) => true)
+        );
     }
 
     spellResult() {
@@ -24,6 +31,7 @@ export class ABC {
 
 class Block {
     private readonly _letter: string;
+
     constructor(letter: string) {
         this._letter = letter;
     }
@@ -39,6 +47,7 @@ class Block {
 
 class Blocks {
     private readonly _blocks: Block[];
+
     constructor(blocks: Block[]) {
         this._blocks = blocks;
     }
