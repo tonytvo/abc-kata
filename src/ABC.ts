@@ -38,8 +38,13 @@ export class ABCFactory {
     static createDefaultABC = () => new ABC(true, new Blocks([]));
 
     static createABCFromBlocks(letters: string[]): ABC {
+        let blocksObj = this.createBlocksFrom(letters);
+        return new ABC(true, blocksObj);
+    }
+
+    static createBlocksFrom(letters: string[]) {
         let blocks = letters.map(letter => new Block(letter));
-        return new ABC(true, new Blocks(blocks));
+        return new Blocks(blocks);
     }
 }
 
