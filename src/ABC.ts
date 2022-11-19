@@ -32,6 +32,10 @@ class Blocks {
     constructor(blocks: Block[]) {
         this._blocks = blocks;
     }
+
+    containsBlock(letters: string) {
+        return this._blocks.includes(new Block(letters));
+    }
 }
 
 export class ABCFactory {
