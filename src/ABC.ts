@@ -25,6 +25,10 @@ class Block {
     constructor(letter: string) {
         this._letter = letter;
     }
+
+    isEqual(block: Block) {
+        return this._letter.toLowerCase() === block._letter.toLowerCase();
+    }
 }
 
 class Blocks {
@@ -34,7 +38,7 @@ class Blocks {
     }
 
     containsBlock(letters: string) {
-        return this._blocks.includes(new Block(letters));
+        return this._blocks.findIndex(element => element.isEqual(new Block(letters))) >= 0;
     }
 }
 

@@ -1,0 +1,2 @@
+- seems like includes/indexOf doesn't do deep equal on object, hence find is used
+- for some reasons, running tests from intellij, skip certain tests even though, it not specified with skips
