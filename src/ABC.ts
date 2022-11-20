@@ -7,10 +7,12 @@ import { map } from 'fp-ts/Array'
 export class ABC {
     private readonly _spellResult: boolean;
     private readonly _blocks: Blocks;
+    private _blocksState: BlocksState;
 
-    constructor(spellResult: boolean, blocks: Blocks) {
+    constructor(spellResult: boolean, blocks: Blocks, blocksState: BlocksState) {
         this._spellResult = spellResult;
         this._blocks = blocks;
+        this._blocksState = blocksState;
     }
 
     canMakeWord(word: string) {
@@ -30,7 +32,7 @@ export class ABC {
     }
 
     containsBlock(blockLetters: string) {
-        return this._blocks.containsBlock(blockLetters);
+        return this._blocksState.containsBlock(blockLetters);
     }
 
     canMakeWords(words: string[]) {
@@ -91,12 +93,13 @@ interface BlocksState {
     next(singleLetter: string): BlocksState;
     hasError(): boolean;
     availableBlocks(): Blocks;
+    containsBlock(blockLetters: string);
 }
 
 class ErrorState implements BlocksState {
     private readonly _blocks: Blocks;
-    private readonly _errors: Error[];
 
+    private readonly _errors: Error[];
     constructor(blocks: Blocks, errors: Error[]) {
         this._blocks = blocks;
         this._errors = errors;
@@ -111,6 +114,10 @@ class ErrorState implements BlocksState {
         )
     }
 
+    containsBlock(blockLetters: string) {
+        return this._blocks.containsBlock(blockLetters);
+    }
+
     availableBlocks(): Blocks {
         return this._blocks;
     }
@@ -123,10 +130,10 @@ class ErrorState implements BlocksState {
 
 class CurrentBlocksState implements BlocksState {
     private readonly _blocks: Blocks;
+
     constructor(blocks: Blocks) {
         this._blocks = blocks;
     }
-
     newErrorState(remainingBlocks: Blocks, error: Error): BlocksState {
         return new ErrorState(remainingBlocks, [error]);
     }
@@ -138,6 +145,10 @@ class CurrentBlocksState implements BlocksState {
                 (error) => this.newErrorState(this._blocks, error),
                 (blocks) => new CurrentBlocksState(blocks))
         )
+    }
+
+    containsBlock(blockLetters: string) {
+        return this._blocks.containsBlock(blockLetters);
     }
 
     availableBlocks(): Blocks {
@@ -153,7 +164,7 @@ class CurrentBlocksState implements BlocksState {
 export class ABCFactory {
     static createABCFromBlocks(letters: string[]): ABC {
         let blocksObj = this.createBlocksFrom(letters);
-        return new ABC(true, blocksObj);
+        return new ABC(true, blocksObj, new CurrentBlocksState(this.createBlocksFrom(letters)));
     }
 
     static createBlocksFrom(letters: string[]) {
