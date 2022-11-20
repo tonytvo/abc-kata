@@ -14,7 +14,6 @@ export class ABC {
     canMakeWord(word: string) {
         let availableBlocks = this._blocks;
         word.split("").forEach( singleLetter => {
-            console.log("availableBlocks = " + JSON.stringify(availableBlocks));
             let result = availableBlocks.removeBlockMakeUpLetter(singleLetter);
             let [canMakeUpLetter, newAvailableBlocks] = pipe(result,
                 E.fold(
@@ -35,6 +34,10 @@ export class ABC {
 
     containsBlock(letter: string) {
         return true;
+    }
+
+    canMakeWords(words: string[]) {
+        return words.map(word => this.canMakeWord(word));
     }
 }
 
