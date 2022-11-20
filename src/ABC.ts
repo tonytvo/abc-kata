@@ -29,10 +29,6 @@ export class ABC {
         return !finalState.hasError();
     }
 
-    spellResult() {
-        return this._spellResult;
-    }
-
     containsBlock(letter: string) {
         return true;
     }
