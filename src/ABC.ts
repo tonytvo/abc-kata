@@ -29,8 +29,8 @@ export class ABC {
         return !finalState.hasError();
     }
 
-    containsBlock(letter: string) {
-        return true;
+    containsBlock(blockLetters: string) {
+        return this._blocks.containsBlock(blockLetters);
     }
 
     canMakeWords(words: string[]) {
