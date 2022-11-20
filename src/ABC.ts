@@ -15,7 +15,8 @@ export class ABC {
     canMakeWord(word: string) {
         const blockStateAction = (singleLetter: string): S.State<BlocksState, BlocksState> => {
             return (state: BlocksState) => {
-                let nextState = state.next(singleLetter);
+                let remainingBlocks = state.availableBlocks().removeBlockMakeUpLetter(singleLetter);
+                let nextState = state.nextState(remainingBlocks);
                 return [nextState, nextState];
             };
         };
@@ -87,7 +88,6 @@ class Blocks {
 }
 
 interface BlocksState {
-    next(singleLetter: string): BlocksState;
     hasError(): boolean;
     availableBlocks(): Blocks;
     containsBlock(blockLetters: string);
@@ -102,12 +102,6 @@ class ErrorState implements BlocksState {
         this._blocks = blocks;
         this._errors = errors;
     }
-
-    next(singleLetter: string): BlocksState {
-        let remainingBlocks = this.availableBlocks().removeBlockMakeUpLetter(singleLetter);
-        return this.nextState(remainingBlocks);
-    }
-
     nextState(remainingBlocks: Right<Blocks> | Left<Error>) {
         return pipe(remainingBlocks,
             E.fold(
@@ -139,11 +133,6 @@ class CurrentBlocksState implements BlocksState {
 
     newErrorState(remainingBlocks: Blocks, error: Error): BlocksState {
         return new ErrorState(remainingBlocks, [error]);
-    }
-
-    next(singleLetter: string): BlocksState {
-        let remainingBlocks = this.availableBlocks().removeBlockMakeUpLetter(singleLetter);
-        return this.nextState(remainingBlocks);
     }
 
     nextState(remainingBlocks: Right<Blocks> | Left<Error>) {
