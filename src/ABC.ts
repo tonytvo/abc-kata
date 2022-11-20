@@ -1,32 +1,34 @@
-import {right, left} from "fp-ts/lib/Either"
 import * as E from "fp-ts/lib/Either";
 import {pipe} from "fp-ts/function";
 import * as S from "fp-ts/lib/State";
-import { map } from 'fp-ts/Array'
-import {Left, Right} from "fp-ts/es6/Either";
+import {map} from 'fp-ts/Array'
+import {BlocksState, CurrentBlocksState} from "./BlocksState";
 
 export class ABC {
     private readonly _blocksState: BlocksState;
 
-    constructor(spellResult: boolean, blocks: Blocks, blocksState: BlocksState) {
+    constructor(blocksState: BlocksState) {
         this._blocksState = blocksState;
     }
 
     canMakeWord(word: string) {
-        const blockStateAction = (singleLetter: string): S.State<BlocksState, BlocksState> => {
-            return (state: BlocksState) => {
-                let remainingBlocks = state.availableBlocks().removeBlockMakeUpLetter(singleLetter);
-                let nextState = state.nextState(remainingBlocks);
-                return [nextState, nextState];
-            };
-        };
-
-        const letterToStateAction = (letter: string) =>  blockStateAction(letter);
-        let actions = pipe(word.split(""), map(letterToStateAction))
+        let actions = this.makeSingleLetterFromBlocksAction(word.split(""));
 
         const [, finalState] = S.sequenceArray(actions)(this._blocksState);
 
         return !finalState.hasError();
+    }
+    private makeSingleLetterFromBlocksAction(letters: string[]) {
+        function blockStateAction(singleLetter: string): S.State<BlocksState, BlocksState> {
+            return (state: BlocksState) => {
+                let remainingBlocksOrError = state.availableBlocks().removeBlockMakeUpLetter(singleLetter);
+                let nextState = state.nextState(remainingBlocksOrError);
+                return [nextState, nextState];
+            };
+        }
+
+        const letterToStateAction = (letter: string) => blockStateAction(letter);
+        return pipe(letters, map(letterToStateAction));
     }
 
     containsBlock(blockLetters: string) {
@@ -54,7 +56,7 @@ class Block {
     }
 }
 
-class Blocks {
+export class Blocks {
     private readonly _blocks: Block[];
 
     constructor(blocks: Block[]) {
@@ -68,8 +70,8 @@ class Blocks {
     removeBlockMakeUpLetter(singleLetter: string) {
         let foundIndex = this._blocks.findIndex(element => element.canMakeLetter(singleLetter));
         return foundIndex >= 0 ?
-            right(this.removeBlockAt(foundIndex)) :
-            left(new Error("There's no match block"));
+            E.right(this.removeBlockAt(foundIndex)) :
+            E.left(new Error("There's no match block"));
     }
 
     private removeBlockAt(foundIndex) {
@@ -87,80 +89,10 @@ class Blocks {
     }
 }
 
-interface BlocksState {
-    hasError(): boolean;
-    availableBlocks(): Blocks;
-    containsBlock(blockLetters: string);
-    nextState(remainingBlocks: Right<Blocks> | Left<Error>): BlocksState;
-}
-
-class ErrorState implements BlocksState {
-    private readonly _blocks: Blocks;
-
-    private readonly _errors: Error[];
-    constructor(blocks: Blocks, errors: Error[]) {
-        this._blocks = blocks;
-        this._errors = errors;
-    }
-    nextState(remainingBlocks: Right<Blocks> | Left<Error>) {
-        return pipe(remainingBlocks,
-            E.fold(
-                (error) => new ErrorState(this._blocks, this._errors.concat([error])),
-                (blocks) => new ErrorState(blocks, this._errors))
-        )
-    }
-
-    containsBlock(blockLetters: string) {
-        return this._blocks.containsBlock(blockLetters);
-    }
-
-    availableBlocks(): Blocks {
-        return this._blocks;
-    }
-
-    hasError(): boolean {
-        return true;
-    }
-
-}
-
-class CurrentBlocksState implements BlocksState {
-    private readonly _blocks: Blocks;
-
-    constructor(blocks: Blocks) {
-        this._blocks = blocks;
-    }
-
-    newErrorState(remainingBlocks: Blocks, error: Error): BlocksState {
-        return new ErrorState(remainingBlocks, [error]);
-    }
-
-    nextState(remainingBlocks: Right<Blocks> | Left<Error>) {
-        return pipe(remainingBlocks,
-            E.fold(
-                (error) => this.newErrorState(this._blocks, error),
-                (blocks) => new CurrentBlocksState(blocks))
-        )
-    }
-
-    containsBlock(blockLetters: string) {
-        return this._blocks.containsBlock(blockLetters);
-    }
-
-    availableBlocks(): Blocks {
-        return this._blocks;
-    }
-
-    hasError(): boolean {
-        return false;
-    }
-}
-
 
 export class ABCFactory {
     static createABCFromBlocks(letters: string[]): ABC {
-        let blocksObj = this.createBlocksFrom(letters);
-        return new ABC(true, blocksObj, new CurrentBlocksState(this.createBlocksFrom(letters)));
+        return new ABC(new CurrentBlocksState(this.createBlocksFrom(letters)));
     }
 
     static createBlocksFrom(letters: string[]) {

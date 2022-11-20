@@ -10,7 +10,7 @@ describe("ABC rules", () => {
     expect(abc.containsBlock("N A")).toEqual(true);
   });
 
-  test("once a litter on a block isused that block cannot be used again", () => {
+  test("once a letter on a block isused that block cannot be used again", () => {
     let abc = ABCFactory.createBlocksFrom(["N A", "B O"]);
     expect(abc.containsBlock("N A")).toEqual(true);
     expect(abc.containsBlock("B O")).toEqual(true);
@@ -49,4 +49,11 @@ describe("ABC rules", () => {
     expect(canMakeWords).toEqual([true, true, false]);
   });
 
+  test("can make words for A, BARK, BOOK, TREAT, COMMON, SQUAD, CONFUSE", () => {
+    let abc = ABCFactory.createABCFromBlocks(["B O", "X K", "D Q", "C P", "N A", "G T", "R E", "T G", "Q D", "F S", "J W", "H U", "V I", "A N", "O B", "E R", "F S", "L Y", "P C", "Z M"]);
+
+    let canMakeWords = abc.canMakeWords(["A", "BARK", "BOOK", "TREAT", "COMMON", "SQUAD", "CONFUSE"]);
+
+    expect(canMakeWords).toEqual([true, true, false, true, false, true, true]);
+  });
 });
