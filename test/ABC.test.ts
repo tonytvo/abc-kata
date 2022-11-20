@@ -41,7 +41,7 @@ describe("ABC rules", () => {
     expect(canMakeWord).toEqual(true);
   });
 
-  test.skip("can make word for A, BARK, but not BOOK", () => {
+  test("can make word for A, BARK, but not BOOK", () => {
     let abc = ABCFactory.createABCFromBlocks(["B O", "X K", "D Q", "C P", "N A", "G T", "R E", "T G", "Q D", "F S", "J W", "H U", "V I", "A N", "O B", "E R", "F S", "L Y", "P C", "Z M"]);
 
     let canMakeWords = abc.canMakeWords(["A", "BARK", "BOOK"]);

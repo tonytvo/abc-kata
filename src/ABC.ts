@@ -1,6 +1,8 @@
 import {right, left, fold, Either} from "fp-ts/lib/Either"
 import * as E from "fp-ts/lib/Either";
 import {pipe} from "fp-ts/function";
+import * as S from "fp-ts/lib/State";
+import { map } from 'fp-ts/Array'
 
 export class ABC {
     private readonly _spellResult: boolean;
@@ -12,20 +14,19 @@ export class ABC {
     }
 
     canMakeWord(word: string) {
-        let availableBlocks = this._blocks;
-        word.split("").forEach( singleLetter => {
-            let result = availableBlocks.removeBlockMakeUpLetter(singleLetter);
-            let [canMakeUpLetter, newAvailableBlocks] = pipe(result,
-                E.fold(
-                    (error) => [false, new Blocks([])],
-                    (blocks) => [true, blocks])
-            );
-            if (!canMakeUpLetter) {
-                return false;
-            }
-            availableBlocks = newAvailableBlocks;
-        });
-        return true;
+        const blockStateAction = (singleLetter: string): S.State<BlocksState, BlocksState> => {
+            return (state: BlocksState) => {
+                let nextState = state.next(singleLetter);
+                return [nextState, nextState];
+            };
+        };
+
+        const letterToStateAction = (letter: string) =>  blockStateAction(letter);
+        let actions = pipe(word.split(""), map(letterToStateAction))
+
+        const [, finalState] = S.sequenceArray(actions)(new CurrentBlocksState(this._blocks));
+
+        return !finalState.hasError();
     }
 
     spellResult() {
