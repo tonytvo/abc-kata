@@ -3,6 +3,7 @@ import * as E from "fp-ts/lib/Either";
 import {pipe} from "fp-ts/function";
 import * as S from "fp-ts/lib/State";
 import { map } from 'fp-ts/Array'
+import {Left, Right} from "fp-ts/es6/Either";
 
 export class ABC {
     private readonly _blocksState: BlocksState;
@@ -102,7 +103,11 @@ class ErrorState implements BlocksState {
     }
 
     next(singleLetter: string): BlocksState {
-        let remainingBlocks = this._blocks.removeBlockMakeUpLetter(singleLetter);
+        let remainingBlocks = this.availableBlocks().removeBlockMakeUpLetter(singleLetter);
+        return this.nextState(remainingBlocks);
+    }
+
+    nextState(remainingBlocks: Right<Blocks> | Left<Error>) {
         return pipe(remainingBlocks,
             E.fold(
                 (error) => new ErrorState(this._blocks, this._errors.concat([error])),
@@ -130,12 +135,17 @@ class CurrentBlocksState implements BlocksState {
     constructor(blocks: Blocks) {
         this._blocks = blocks;
     }
+
     newErrorState(remainingBlocks: Blocks, error: Error): BlocksState {
         return new ErrorState(remainingBlocks, [error]);
     }
 
     next(singleLetter: string): BlocksState {
-        let remainingBlocks = this._blocks.removeBlockMakeUpLetter(singleLetter);
+        let remainingBlocks = this.availableBlocks().removeBlockMakeUpLetter(singleLetter);
+        return this.nextState(remainingBlocks);
+    }
+
+    nextState(remainingBlocks: Right<Blocks> | Left<Error>) {
         return pipe(remainingBlocks,
             E.fold(
                 (error) => this.newErrorState(this._blocks, error),
