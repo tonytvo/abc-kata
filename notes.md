@@ -5,3 +5,4 @@
   - as long as there one letter that can't be built/match with anyblock, return error
 - state monoid seems to be keep repeating as a way to keep tracking of changing mutable state.
 - state interface argument list seems to be switching back and forth, which is weird
+- https://dev.to/derp/state-monad-in-fp-ts-5c79
