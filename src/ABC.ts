@@ -91,6 +91,7 @@ interface BlocksState {
     hasError(): boolean;
     availableBlocks(): Blocks;
     containsBlock(blockLetters: string);
+    nextState(remainingBlocks: Right<Blocks> | Left<Error>): BlocksState;
 }
 
 class ErrorState implements BlocksState {
