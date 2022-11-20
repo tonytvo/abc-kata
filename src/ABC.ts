@@ -155,8 +155,6 @@ class CurrentBlocksState implements BlocksState {
 
 
 export class ABCFactory {
-    static createDefaultABC = () => new ABC(true, new Blocks([]));
-
     static createABCFromBlocks(letters: string[]): ABC {
         let blocksObj = this.createBlocksFrom(letters);
         return new ABC(true, blocksObj);
