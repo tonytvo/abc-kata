@@ -5,13 +5,9 @@ import * as S from "fp-ts/lib/State";
 import { map } from 'fp-ts/Array'
 
 export class ABC {
-    private readonly _spellResult: boolean;
-    private readonly _blocks: Blocks;
-    private _blocksState: BlocksState;
+    private readonly _blocksState: BlocksState;
 
     constructor(spellResult: boolean, blocks: Blocks, blocksState: BlocksState) {
-        this._spellResult = spellResult;
-        this._blocks = blocks;
         this._blocksState = blocksState;
     }
 
@@ -26,7 +22,7 @@ export class ABC {
         const letterToStateAction = (letter: string) =>  blockStateAction(letter);
         let actions = pipe(word.split(""), map(letterToStateAction))
 
-        const [, finalState] = S.sequenceArray(actions)(new CurrentBlocksState(this._blocks));
+        const [, finalState] = S.sequenceArray(actions)(this._blocksState);
 
         return !finalState.hasError();
     }
