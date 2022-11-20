@@ -1,4 +1,4 @@
-import {right, left, fold, Either} from "fp-ts/lib/Either"
+import {right, left} from "fp-ts/lib/Either"
 import * as E from "fp-ts/lib/Either";
 import {pipe} from "fp-ts/function";
 import * as S from "fp-ts/lib/State";
