@@ -90,6 +90,69 @@ class Blocks {
     }
 }
 
+interface BlocksState {
+    next(singleLetter: string): BlocksState;
+    hasError(): boolean;
+    availableBlocks(): Blocks;
+}
+
+class ErrorState implements BlocksState {
+    private readonly _blocks: Blocks;
+    private readonly _errors: Error[];
+
+    constructor(blocks: Blocks, errors: Error[]) {
+        this._blocks = blocks;
+        this._errors = errors;
+    }
+
+    next(singleLetter: string): BlocksState {
+        let remainingBlocks = this._blocks.removeBlockMakeUpLetter(singleLetter);
+        return pipe(remainingBlocks,
+            E.fold(
+                (error) => new ErrorState(this._blocks, this._errors.concat([error])),
+                (blocks) => new ErrorState(blocks, this._errors))
+        )
+    }
+
+    availableBlocks(): Blocks {
+        return this._blocks;
+    }
+
+    hasError(): boolean {
+        return true;
+    }
+
+}
+
+class CurrentBlocksState implements BlocksState {
+    private readonly _blocks: Blocks;
+    constructor(blocks: Blocks) {
+        this._blocks = blocks;
+    }
+
+    newErrorState(remainingBlocks: Blocks, error: Error): BlocksState {
+        return new ErrorState(remainingBlocks, [error]);
+    }
+
+    next(singleLetter: string): BlocksState {
+        let remainingBlocks = this._blocks.removeBlockMakeUpLetter(singleLetter);
+        return pipe(remainingBlocks,
+            E.fold(
+                (error) => this.newErrorState(this._blocks, error),
+                (blocks) => new CurrentBlocksState(blocks))
+        )
+    }
+
+    availableBlocks(): Blocks {
+        return this._blocks;
+    }
+
+    hasError(): boolean {
+        return false;
+    }
+}
+
+
 export class ABCFactory {
     static createDefaultABC = () => new ABC(true, new Blocks([]));
 
