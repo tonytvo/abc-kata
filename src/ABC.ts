@@ -18,12 +18,13 @@ export class ABC {
 
         return !finalState.hasError();
     }
+
     private makeSingleLetterFromBlocksAction(letters: string[]) {
-        function blockStateAction(singleLetter: string): S.State<BlocksState, BlocksState> {
+        function blockStateAction(singleLetter: string): S.State<BlocksState, any> {
             return (state: BlocksState) => {
                 let remainingBlocksOrError = state.availableBlocks().removeBlockMakeUpLetter(singleLetter);
                 let nextState = state.nextState(remainingBlocksOrError);
-                return [nextState, nextState];
+                return [[], nextState];
             };
         }
 

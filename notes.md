@@ -3,3 +3,5 @@
 - trycatch to return error early, but it's kind of like state system
   - once the letter is used with certain blocks, it can check the remaining letters with the remaining blocks
   - as long as there one letter that can't be built/match with anyblock, return error
+- state monoid seems to be keep repeating as a way to keep tracking of changing mutable state.
+- state interface argument list seems to be switching back and forth, which is weird
